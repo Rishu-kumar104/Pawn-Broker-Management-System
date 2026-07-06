@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Loan {
+  id             String    @id @default(cuid())
+  customerName   String
+  loanDate       DateTime
+  loanAmount     Float
+  interestRate   Float
+  pledgedItem    String
+  grossWeight    Float
+  stoneWeight    Float
+  netWeight      Float
+  estimatedValue Float
+  paymentMode    String
+  createdAt      DateTime  @default(now())
+  payments       Payment[]
+  journals       Journal[]
+}
+
+model Payment {
+  id            String   @id @default(cuid())
+  loanId        String
+  amount        Float
+  principalPaid Float
+  interestPaid  Float
+  paymentDate   DateTime @default(now())
+  loan          Loan     @relation(fields: [loanId], references: [id])
+}
+
+model Journal {
+  id        String   @id @default(cuid())
+  loanId    String
+  voucherNo String
+  account   String
+  debit     Float    @default(0)
+  credit    Float    @default(0)
+  date      DateTime @default(now())
+  loan      Loan     @relation(fields: [loanId], references: [id])
+}
