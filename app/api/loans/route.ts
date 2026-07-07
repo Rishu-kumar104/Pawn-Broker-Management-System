@@ -7,6 +7,20 @@ import {
   validationErrorResponse,
 } from "@/lib/validations";
 
+function getDatabaseErrorMessage(error: unknown): string {
+  const message = error instanceof Error ? error.message : "";
+
+  if (message.includes("Unable to open the database file")) {
+    return "Database write failed. SQLite is not writable in Vercel serverless runtime. Use a hosted Postgres database and set DATABASE_URL in Vercel.";
+  }
+
+  if (message.includes("Environment variable not found: DATABASE_URL")) {
+    return "DATABASE_URL is missing. Set this environment variable in Vercel project settings.";
+  }
+
+  return "Failed to create loan";
+}
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -76,8 +90,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(enrichLoan(fullLoan!), { status: 201 });
   } catch (error) {
     console.error("POST /api/loans error:", error);
+    const message = getDatabaseErrorMessage(error);
     return NextResponse.json(
-      { error: "Failed to create loan" },
+      { error: message },
       { status: 500 }
     );
   }

@@ -19,7 +19,7 @@ This system helps pawn brokers:
 | Next.js 15+ (App Router) | Full-stack React framework |
 | TypeScript | Type-safe development |
 | Prisma ORM | Database access and migrations |
-| SQLite | Lightweight local database |
+| PostgreSQL | Production-ready hosted database (Neon/Supabase/Vercel Postgres) |
 | Tailwind CSS | Utility-first styling |
 | Zod | Request validation |
 | date-fns | Date calculations |
@@ -41,11 +41,11 @@ cd pawn-broker
 npm install
 
 # Set up environment variables
-# Copy .env (already included) or create one with:
-# DATABASE_URL="file:./dev.db"
+# Copy .env.example to .env and set your Postgres URL
+# DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public"
 
-# Run database migration
-npx prisma migrate dev
+# Create tables in your Postgres database (first setup)
+npx prisma db push
 
 # Start development server
 npm run dev
@@ -58,7 +58,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 Create a `.env` file in the project root:
 
 ```env
-DATABASE_URL="file:./dev.db"
+DATABASE_URL="postgresql://USER:PASSWORD@HOST:5432/DATABASE?schema=public"
 ```
 
 ## Prisma Commands
@@ -67,8 +67,11 @@ DATABASE_URL="file:./dev.db"
 # Generate Prisma client after schema changes
 npx prisma generate
 
-# Create and apply migrations
-npx prisma migrate dev
+# Push schema to database (first setup / simple deploy)
+npx prisma db push
+
+# Create and apply migrations (recommended during development)
+npx prisma migrate dev --name init
 
 # Open Prisma Studio (database GUI)
 npx prisma studio
