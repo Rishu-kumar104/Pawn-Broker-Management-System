@@ -53,6 +53,17 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## Vercel Deployment
+
+For full production deployment steps (Neon, Supabase, Vercel Postgres, env vars, and troubleshooting), see **[DEPLOYMENT.md](./DEPLOYMENT.md)**.
+
+Quick checklist:
+
+1. Create a hosted Postgres database (Neon recommended).
+2. Set `DATABASE_URL` in Vercel with the **real** connection string (not `HOST` placeholder).
+3. Run `npm run db:verify` locally once to create tables.
+4. Push to GitHub and redeploy on Vercel.
+
 ## Environment Setup
 
 Create a `.env` file in the project root:
