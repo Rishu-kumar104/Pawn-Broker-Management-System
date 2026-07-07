@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { createLoanJournalEntries } from "@/lib/accounting";
 import { enrichLoan } from "@/lib/loan-helpers";
@@ -10,15 +11,31 @@ import {
 function getDatabaseErrorMessage(error: unknown): string {
   const message = error instanceof Error ? error.message : "";
 
-  if (message.includes("Unable to open the database file")) {
-    return "Database write failed. SQLite is not writable in Vercel serverless runtime. Use a hosted Postgres database and set DATABASE_URL in Vercel.";
-  }
-
   if (message.includes("Environment variable not found: DATABASE_URL")) {
     return "DATABASE_URL is missing. Set this environment variable in Vercel project settings.";
   }
 
-  return "Failed to create loan";
+  if (message.includes("Unable to open the database file")) {
+    return "Database write failed. SQLite is not writable on Vercel. Use a hosted Postgres DATABASE_URL.";
+  }
+
+  if (error instanceof Prisma.PrismaClientKnownRequestError) {
+    if (error.code === "P2021") {
+      return "Database tables are missing. Redeploy after setting DATABASE_URL so prisma db push can create tables.";
+    }
+    if (error.code === "P1000") {
+      return "Database authentication failed. Check username and password in DATABASE_URL.";
+    }
+    if (error.code === "P1001") {
+      return "Cannot reach database server. Check host, port, and sslmode in DATABASE_URL.";
+    }
+  }
+
+  if (message.includes("does not exist") && message.includes("relation")) {
+    return "Database tables are missing. Redeploy so prisma db push can create them.";
+  }
+
+  return message || "Failed to create loan";
 }
 
 export async function GET(request: NextRequest) {
