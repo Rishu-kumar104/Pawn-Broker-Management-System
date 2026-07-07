@@ -3,28 +3,40 @@ import { prisma } from "@/lib/prisma";
 import { enrichLoan } from "@/lib/loan-helpers";
 import { formatCurrency } from "@/lib/interest";
 
+export const dynamic = "force-dynamic";
+
 async function getDashboardStats() {
-  const loans = await prisma.loan.findMany({
-    include: { payments: true },
-  });
+  try {
+    const loans = await prisma.loan.findMany({
+      include: { payments: true },
+    });
 
-  const enriched = loans.map(enrichLoan);
-  const activeLoans = enriched.filter((l) => l.status === "Active").length;
-  const totalPrincipalOutstanding = enriched.reduce(
-    (sum, l) => sum + l.balancePrincipal,
-    0
-  );
-  const totalInterestCollected = enriched.reduce(
-    (sum, l) => sum + l.totalInterestPaid,
-    0
-  );
+    const enriched = loans.map(enrichLoan);
+    const activeLoans = enriched.filter((l) => l.status === "Active").length;
+    const totalPrincipalOutstanding = enriched.reduce(
+      (sum, l) => sum + l.balancePrincipal,
+      0
+    );
+    const totalInterestCollected = enriched.reduce(
+      (sum, l) => sum + l.totalInterestPaid,
+      0
+    );
 
-  return {
-    totalLoans: loans.length,
-    activeLoans,
-    totalPrincipalOutstanding,
-    totalInterestCollected,
-  };
+    return {
+      totalLoans: loans.length,
+      activeLoans,
+      totalPrincipalOutstanding,
+      totalInterestCollected,
+    };
+  } catch (error) {
+    console.error("Failed to load dashboard stats:", error);
+    return {
+      totalLoans: 0,
+      activeLoans: 0,
+      totalPrincipalOutstanding: 0,
+      totalInterestCollected: 0,
+    };
+  }
 }
 
 export default async function DashboardPage() {
