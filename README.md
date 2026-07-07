@@ -55,7 +55,10 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Vercel Deployment
 
-For full production deployment steps (Neon, Supabase, Vercel Postgres, env vars, and troubleshooting), see **[DEPLOYMENT.md](./DEPLOYMENT.md)**.
+For full production deployment steps (Neon, Supabase, Vercel Postgres, env vars, and troubleshooting), see:
+
+- **[VERCEL_SETUP.md](./VERCEL_SETUP.md)** — step-by-step fresh Vercel deploy (start here)
+- **[DEPLOYMENT.md](./DEPLOYMENT.md)** — detailed database and troubleshooting guide
 
 Quick checklist:
 

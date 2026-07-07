@@ -8,7 +8,10 @@ const isPostgres =
 const looksLikePlaceholder =
   databaseUrl.includes("@HOST:") ||
   databaseUrl.includes("USER:PASSWORD@") ||
-  databaseUrl.includes("/DATABASE");
+  databaseUrl.includes("/DATABASE") ||
+  databaseUrl.includes("YOUR_REAL_HOST") ||
+  databaseUrl.includes("YOUR_PASSWORD") ||
+  databaseUrl.includes("YOUR_USER");
 
 if (!isPostgres) {
   console.warn(
